@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Restock buyer portal</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F5F1}
+a{color:#0B6E4F}a:hover{color:#084F39}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{text-align:left;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#5B655F;padding:12px 14px;border-bottom:1px solid #E2E5DF;white-space:nowrap}
+.tbl td{padding:14px;border-bottom:1px solid #EEF0EB;vertical-align:top}
+.num{font-family:'JetBrains Mono',monospace}
+.pin{width:96px;height:40px;box-sizing:border-box;border:1px solid #CFD5CC;border-radius:8px;padding:0 10px;font:600 15px 'JetBrains Mono',monospace;color:#15201B;background:#fff}
+.pin:focus{outline:2px solid #0B6E4F;outline-offset:1px;border-color:#0B6E4F}
+</style>
+</helmet>
+<div style="min-height: 100vh; display: flex; flex-wrap: wrap; font-family: Manrope, system-ui, sans-serif; color: #15201B; background: #F4F5F1">
+
+<nav aria-label="Main menu" style="flex: 1 1 232px; max-width: 100%; background: #12201A; color: #E8EFEA; padding: 28px 18px; box-sizing: border-box; display: flex; flex-direction: column; gap: 28px">
+<div style="display: flex; align-items: center; gap: 10px; padding: 0 8px">
+<svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="11" fill="none" stroke="#5FD3A1" stroke-width="3"></circle><path d="M15 4 a11 11 0 0 1 11 11" fill="none" stroke="#F4F5F1" stroke-width="3"></path></svg>
+<span style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em">restock</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<sc-for list="{{nav}}" as="item" hint-placeholder-count="5">
+<button type="button" onClick="{{item.go}}" style="{{item.style}}">{{item.label}}</button>
+</sc-for>
+</div>
+<div style="margin-top: auto; border: 1px solid #2C3D34; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 12px; color: #9FB3A8">Signed in as</span>
+<span style="font-weight: 700">[COMPANY NAME]</span>
+</div>
+</nav>
+
+<main style="flex: 999 1 560px; min-width: 0; padding: 28px 32px 48px; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px">
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 13px; color: #5B655F; font-weight: 600">Sample data</span>
+<h1 style="margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.02em">{{screenTitle}}</h1>
+</div>
+<div style="{{deadlineStyle}}">
+<span style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em">{{deadlineLabel}}</span>
+<span class="num" style="font-size: 20px; font-weight: 600">{{deadlineTime}}</span>
+</div>
+</div>
+
+<sc-if value="{{isDash}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 24px">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="4">
+<div style="background: #FFFFFF; border: 1px solid #E2E5DF; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 13px; font-weight: 600; color: #5B655F">{{k.label}}</span>
+<span class="num" style="font-size: 30px; font-weight: 600">{{k.value}}</span>
+<span style="font-size: 13px; color: #5B655F">{{k.sub}}</span>
+</div>
+</sc-for>
+</div>
+<section style="background: #FFFFFF; border: 1px solid #E2E5DF; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px">
+<h2 style="margin: 0; font-size: 18px; font-weight: 800">Your position vs yesterday</h2>
+<span style="font-size: 13px; color: #5B655F">Yesterday's best price per state, next to your current price</span>
+</div>
+<div style="overflow-x: auto">
+<table class="tbl">
+<thead><tr><th>Model</th><th>State</th><th>Your price</th><th>Best yesterday</th><th>Difference</th><th>Status</th></tr></thead>
+<tbody>
+<sc-for list="{{positions}}" as="r" hint-placeholder-count="6">
+<tr>
+<td style="font-weight: 700">{{r.name}}</td>
+<td>{{r.state}}</td>
+<td class="num">{{r.yours}}</td>
+<td class="num">{{r.best}}</td>
+<td class="num" style="{{r.diffStyle}}">{{r.diff}}</td>
+<td><span style="{{r.badgeStyle}}">{{r.badge}}</span></td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{isPrices}}" hint-placeholder-val="{{ false }}">
+<section style="background: #FFFFFF; border: 1px solid #E2E5DF; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="search" style="font-size: 13px; font-weight: 700">Search model</label>
+<input id="search" type="search" value="{{query}}" onChange="{{onQuery}}" placeholder="e.g. iPhone 15" style="width: 280px; max-width: 100%; height: 44px; box-sizing: border-box; border: 1px solid #CFD5CC; border-radius: 10px; padding: 0 14px; font: 500 15px Manrope, sans-serif">
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<button type="button" style="height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid #CFD5CC; background: #FFFFFF; font: 700 14px Manrope, sans-serif; color: #15201B; cursor: pointer">Import CSV</button>
+<button type="button" onClick="{{onMatch}}" style="height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid #0B6E4F; background: #E3F1EA; font: 700 14px Manrope, sans-serif; color: #084F39; cursor: pointer">Set all to yesterday's best + € 1</button>
+<button type="button" onClick="{{onSave}}" style="height: 44px; padding: 0 22px; border-radius: 10px; border: 0; background: #0B6E4F; font: 700 14px Manrope, sans-serif; color: #FFFFFF; cursor: pointer">Save</button>
+</div>
+</div>
+<sc-if value="{{saved}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="background: #E3F1EA; color: #084F39; border-radius: 10px; padding: 12px 16px; font-weight: 700; font-size: 14px">Saved. Your prices count for today's round.</div>
+</sc-if>
+<div style="overflow-x: auto">
+<table class="tbl">
+<thead><tr><th>Product</th><th>State 1A</th><th>State 1B</th><th>State 1C</th><th>State 2</th></tr></thead>
+<tbody>
+<sc-for list="{{rows}}" as="p" hint-placeholder-count="6">
+<tr>
+<td style="min-width: 180px"><div style="font-weight: 800">{{p.name}}</div><div style="font-size: 13px; color: #5B655F">{{p.brand}} · margin VAT</div></td>
+<sc-for list="{{p.cells}}" as="c" hint-placeholder-count="4">
+<td>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; align-items: center; gap: 6px"><span style="font-size: 14px; font-weight: 700">€</span><input class="pin" inputmode="numeric" value="{{c.value}}" onChange="{{c.onChange}}" aria-label="{{c.aria}}"></div>
+<span class="num" style="font-size: 12px; color: #5B655F">yesterday: {{c.bestLabel}}</span>
+<span style="{{c.hintStyle}}">{{c.hint}}</span>
+</div>
+</td>
+</sc-for>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{isTrade}}" hint-placeholder-val="{{ false }}">
+<section style="background: #FFFFFF; border: 1px solid #E2E5DF; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{tradeFilters}}" as="f" hint-placeholder-count="4">
+<button type="button" onClick="{{f.go}}" style="{{f.style}}">{{f.label}}</button>
+</sc-for>
+</div>
+<div style="overflow-x: auto">
+<table class="tbl">
+<thead><tr><th>Transaction</th><th>Date</th><th>Model</th><th>State</th><th>Price</th><th>VAT</th><th>Status</th><th>Assessment</th></tr></thead>
+<tbody>
+<sc-for list="{{trades}}" as="t" hint-placeholder-count="6">
+<tr>
+<td class="num">{{t.id}}</td>
+<td class="num" style="white-space: nowrap">{{t.date}}</td>
+<td style="font-weight: 700">{{t.model}}</td>
+<td>{{t.state}}</td>
+<td class="num">{{t.price}}</td>
+<td>{{t.vat}}</td>
+<td><span style="{{t.badgeStyle}}">{{t.status}}</span></td>
+<td>{{t.center}}</td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{isGuide}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 24px; max-width: 1100px">
+<section style="background: #FFFFFF; border: 1px solid #E2E5DF; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 18px">
+<h2 style="margin: 0; font-size: 20px; font-weight: 800">How a daily round works</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px">
+<sc-for list="{{steps}}" as="st" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 12px; background: #F4F5F1">
+<span class="num" style="width: 32px; height: 32px; border-radius: 999px; background: #12201A; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 600">{{st.n}}</span>
+<span style="font-weight: 800; font-size: 16px">{{st.title}}</span>
+<span style="font-size: 14px; line-height: 1.5; color: #3A443E">{{st.text}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+<section style="background: #FFFFFF; border: 1px solid #E2E5DF; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0; font-size: 20px; font-weight: 800">Device states</h2>
+<span style="font-size: 14px; color: #5B655F">Every device is checked for activation lock and blacklist status. Data is wiped where possible.</span>
+</div>
+<div style="overflow-x: auto">
+<table class="tbl">
+<thead><tr><th>State</th><th>Name</th><th>What it means</th><th>Category</th></tr></thead>
+<tbody>
+<sc-for list="{{guideStates}}" as="g" hint-placeholder-count="8">
+<tr>
+<td><span class="num" style="display: inline-block; min-width: 36px; text-align: center; padding: 4px 8px; border-radius: 8px; background: #E3F1EA; color: #084F39; font-weight: 600">{{g.id}}</span></td>
+<td style="font-weight: 700; white-space: nowrap">{{g.name}}</td>
+<td style="line-height: 1.5">{{g.detail}}</td>
+<td style="color: #5B655F; white-space: nowrap">{{g.group}}</td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+<span style="font-size: 13px; color: #5B655F">Anything not covered by these states is not tested and does not count as a discrepancy.</span>
+</section>
+<section style="background: #FFFFFF; border: 1px solid #E2E5DF; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 20px; font-weight: 800">Questions?</h2>
+<span style="font-size: 14px; color: #3A443E">Contact your account manager at [EMAIL] or [PHONE].</span>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{isOther}}" hint-placeholder-val="{{ false }}">
+<section style="background: #FFFFFF; border: 1px dashed #CFD5CC; border-radius: 14px; padding: 48px 24px; text-align: center; color: #5B655F; font-weight: 600">This screen comes in a next step.</section>
+</sc-if>
+
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":960}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    var products = [
+      { id: 'i15pm256', name: 'iPhone 15 Pro Max 256GB', brand: 'Apple', best: { '1A': 742, '1B': 705, '1C': 651, '2': 610 } },
+      { id: 'i15p256', name: 'iPhone 15 Pro 256GB', brand: 'Apple', best: { '1A': 612, '1B': 580, '1C': 538, '2': 499 } },
+      { id: 'i15p128', name: 'iPhone 15 Pro 128GB', brand: 'Apple', best: { '1A': 548, '1B': 517, '1C': 470, '2': 436 } },
+      { id: 'i14128', name: 'iPhone 14 128GB', brand: 'Apple', best: { '1A': 352, '1B': 331, '1C': 298, '2': 270 } },
+      { id: 's24256', name: 'Galaxy S24 256GB', brand: 'Samsung', best: { '1A': 395, '1B': 370, '1C': 331, '2': 300 } },
+      { id: 'gw540', name: 'Galaxy Watch5 40mm', brand: 'Samsung', best: { '1A': 58, '1B': 51, '1C': 42, '2': 36 } }
+    ];
+    var prices = {
+      'i15pm256|1A': '735', 'i15pm256|1B': '710', 'i15p256|1A': '615', 'i15p256|1B': '570',
+      'i15p128|1A': '540', 'i14128|1A': '355', 's24256|1B': '360'
+    };
+    this.products = products;
+    this.state = { screen: 'dash', prices: prices, query: '', saved: false, tradeFilter: 'all', now: Date.now() };
+  }
+  componentDidMount() { this.timer = setInterval(() => this.setState({ now: Date.now() }), 30000); }
+  componentWillUnmount() { clearInterval(this.timer); }
+  eur(n) { return '€ ' + Math.round(n).toLocaleString('en-GB'); }
+  pill(bg, fg) { return 'display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; background: ' + bg + '; color: ' + fg; }
+  renderVals() {
+    var s = this.state;
+    var self = this;
+    var states = ['1A', '1B', '1C', '2'];
+    var screens = [['dash', 'Dashboard'], ['prices', 'Price manager'], ['trade', 'Purchases'], ['ship', 'Shipments'], ['inv', 'Invoices'], ['guide', 'Guide']];
+    var nav = screens.map(function (x) {
+      var on = s.screen === x[0];
+      return {
+        label: x[1],
+        go: function () { self.setState({ screen: x[0], saved: false }); },
+        style: 'text-align: left; min-height: 44px; padding: 0 14px; border-radius: 10px; border: 0; cursor: pointer; font: 700 15px Manrope, sans-serif; ' + (on ? 'background: #5FD3A1; color: #12201A' : 'background: transparent; color: #E8EFEA')
+      };
+    });
+
+    var d = new Date(s.now);
+    var close = new Date(d); close.setHours(16, 0, 0, 0);
+    var open = d < close;
+    var mins = Math.max(0, Math.round((close - d) / 60000));
+    var deadlineLabel = open ? 'Round closes at 16:00' : 'Round closed';
+    var deadlineTime = open ? (Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm left') : 'results pending';
+    var urgent = open && mins <= 60;
+    var deadlineStyle = 'display: flex; flex-direction: column; gap: 2px; padding: 12px 18px; border-radius: 12px; ' + (urgent ? 'background: #FFF3E0; color: #7A4300; border: 1px solid #F2C98A' : 'background: #FFFFFF; color: #15201B; border: 1px solid #E2E5DF');
+
+    var q = s.query.trim().toLowerCase();
+    var priced = 0, winning = 0, total = 0;
+    var positions = [];
+    var rows = this.products.filter(function (p) { return !q || p.name.toLowerCase().indexOf(q) >= 0; }).map(function (p) {
+      return {
+        name: p.name, brand: p.brand,
+        cells: states.map(function (st) {
+          var key = p.id + '|' + st;
+          var v = s.prices[key] || '';
+          var n = parseFloat(v);
+          var best = p.best[st];
+          var hint, hintStyle;
+          if (!v) { hint = 'No bid'; hintStyle = 'font-size: 12px; color: #5B655F'; }
+          else if (n > best) { hint = "Above yesterday's best"; hintStyle = 'font-size: 12px; font-weight: 700; color: #0B6E4F'; }
+          else { hint = (best - n === 0 ? 'Equal to best' : ('€ ' + (best - n) + ' below best')); hintStyle = 'font-size: 12px; font-weight: 700; color: #9A4F00'; }
+          return {
+            value: v, bestLabel: self.eur(best), hint: hint, hintStyle: hintStyle,
+            aria: 'Price ' + p.name + ' state ' + st,
+            onChange: function (e) {
+              var val = e.target.value.replace(/[^0-9]/g, '');
+              var next = Object.assign({}, self.state.prices); next[key] = val;
+              self.setState({ prices: next, saved: false });
+            }
+          };
+        })
+      };
+    });
+    this.products.forEach(function (p) {
+      states.forEach(function (st) {
+        total++;
+        var v = s.prices[p.id + '|' + st];
+        if (!v) return;
+        var n = parseFloat(v), best = p.best[st];
+        priced++;
+        if (n > best) winning++;
+        var diff = n - best;
+        positions.push({
+          name: p.name, state: st, yours: self.eur(n), best: self.eur(best),
+          diff: (diff > 0 ? '+' : '') + diff + ' €',
+          diffStyle: 'font-weight: 600; color: ' + (diff > 0 ? '#0B6E4F' : '#9A4F00'),
+          badge: diff > 0 ? 'Good chance' : 'Too low',
+          badgeStyle: diff > 0 ? self.pill('#E3F1EA', '#084F39') : self.pill('#FFF3E0', '#7A4300')
+        });
+      });
+    });
+
+    var kpis = [
+      { label: 'Won yesterday', value: '23', sub: 'devices purchased' },
+      { label: 'Priced', value: priced + ' / ' + total, sub: 'model and state combinations' },
+      { label: 'Good chance', value: String(winning), sub: "above yesterday's best" },
+      { label: 'Credit', value: '€ 114,200', sub: 'of € 117,400 limit' }
+    ];
+
+    var trades = [
+      { id: '2245038', date: '17 Oct 15:50', model: 'iPhone 15 Pro 256GB', state: '1', price: '€ 515', vat: 'Margin', status: 'To ship', center: 'Assessment North' },
+      { id: '2209328', date: '17 Oct 15:35', model: 'iPhone 15 Pro 128GB', state: '1', price: '€ 450', vat: 'Margin', status: 'To ship', center: 'Assessment North' },
+      { id: '2209286', date: '17 Oct 15:29', model: 'iPhone 15 Pro 256GB', state: '1B', price: '€ 570', vat: 'Margin', status: 'In transit', center: 'Assessment South' },
+      { id: '2209201', date: '17 Oct 15:14', model: 'iPhone 15 Pro Max 256GB', state: '1A', price: '€ 735', vat: 'Margin', status: 'Assessed', center: 'Assessment North' },
+      { id: '2209095', date: '17 Oct 14:59', model: 'Galaxy S24 256GB', state: '1B', price: '€ 360', vat: 'Standard', status: 'Discrepancy', center: 'Assessment South' },
+      { id: '2208871', date: '16 Oct 11:02', model: 'iPhone 14 128GB', state: '1A', price: '€ 355', vat: 'Margin', status: 'Invoiced', center: 'Assessment North' }
+    ];
+    var colors = { 'To ship': ['#FFF3E0', '#7A4300'], 'In transit': ['#E6EEF8', '#1D4E89'], 'Assessed': ['#E3F1EA', '#084F39'], 'Discrepancy': ['#FBE7E6', '#8E1F17'], 'Invoiced': ['#ECEEEA', '#3A443E'] };
+    var tf = s.tradeFilter;
+    var tradeFilters = [['all', 'All'], ['To ship', 'To ship'], ['In transit', 'In transit'], ['Discrepancy', 'Discrepancy']].map(function (f) {
+      var on = tf === f[0];
+      return { label: f[1], go: function () { self.setState({ tradeFilter: f[0] }); }, style: 'min-height: 40px; padding: 0 16px; border-radius: 999px; cursor: pointer; font: 700 14px Manrope, sans-serif; ' + (on ? 'background: #12201A; color: #FFFFFF; border: 1px solid #12201A' : 'background: #FFFFFF; color: #15201B; border: 1px solid #CFD5CC') };
+    });
+    var tradeRows = trades.filter(function (t) { return tf === 'all' || t.status === tf; }).map(function (t) {
+      var c = colors[t.status];
+      return Object.assign({}, t, { badgeStyle: self.pill(c[0], c[1]) });
+    });
+
+    var titles = { dash: 'Dashboard', prices: 'Price manager', trade: 'Purchases', ship: 'Shipments', inv: 'Invoices', guide: 'Guide' };
+    var guideStates = [
+      { id: '1A', name: 'Fully tested', detail: 'All functions work. Looks close to new, at most tiny marks.', group: 'Fully tested' },
+      { id: '1B', name: 'Fully tested', detail: 'All functions work. Light, visible signs of use.', group: 'Fully tested' },
+      { id: '1C', name: 'Fully tested', detail: 'All functions work. Clear wear, scratches or dents.', group: 'Fully tested' },
+      { id: '1', name: 'Basic check only', detail: 'Turns on, screen and housing intact, no missing parts. Other functions not tested.', group: 'Partly tested' },
+      { id: '2', name: 'Worn battery', detail: 'Fully tested, but battery health below 80% or more than 700 cycles.', group: 'Fully tested' },
+      { id: '3', name: 'Major defect', detail: 'At least one major fault, such as camera, back glass, flash, microphone or Bluetooth.', group: 'Defective' },
+      { id: '4', name: 'Screen defect', detail: 'Cracked screen, dead pixels, or Face ID / Touch ID not working.', group: 'Defective' },
+      { id: '5', name: 'No power or locked', detail: 'Does not turn on, or is locked to an account.', group: 'Defective' }
+    ];
+    var steps = [
+      { n: '1', title: 'Set your prices', text: 'Enter a price per model and state in the Price manager, or import a CSV.' },
+      { n: '2', title: 'Before 16:00 CET', text: 'Prices saved before 16:00 count for that day. Bids are sealed: nobody sees anyone else’s price.' },
+      { n: '3', title: 'Highest price wins', text: 'Each device goes to the buyer with the highest price for its model and state. The next day you see yesterday’s best price.' },
+      { n: '4', title: 'Assessment and shipping', text: 'Won devices are checked at an assessment centre, then shipped to you and invoiced.' }
+    ];
+    return {
+      nav: nav, screenTitle: titles[s.screen],
+      isDash: s.screen === 'dash', isPrices: s.screen === 'prices', isTrade: s.screen === 'trade', isGuide: s.screen === 'guide', guideStates: guideStates, steps: steps, isOther: s.screen === 'ship' || s.screen === 'inv',
+      deadlineLabel: deadlineLabel, deadlineTime: deadlineTime, deadlineStyle: deadlineStyle,
+      kpis: kpis, positions: positions, rows: rows, query: s.query, saved: s.saved,
+      trades: tradeRows, tradeFilters: tradeFilters,
+      onQuery: function (e) { self.setState({ query: e.target.value }); },
+      onSave: function () { self.setState({ saved: true }); },
+      onMatch: function () {
+        var next = Object.assign({}, self.state.prices);
+        self.products.forEach(function (p) { states.forEach(function (st) { next[p.id + '|' + st] = String(p.best[st] + 1); }); });
+        self.setState({ prices: next, saved: false });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>
