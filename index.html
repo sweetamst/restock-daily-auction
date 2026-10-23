@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Restock buyer portal</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+<div class="shell">
+
+  <nav class="sidebar" aria-label="Main menu">
+    <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
+        <circle cx="15" cy="15" r="11" fill="none" stroke="#5FD3A1" stroke-width="3"></circle>
+        <path d="M15 4 a11 11 0 0 1 11 11" fill="none" stroke="#F4F5F1" stroke-width="3"></path>
+      </svg>
+      <span class="brand-name">restock</span>
+    </div>
+    <div class="nav-list">
+      <button type="button" class="nav-item" data-screen="dash" aria-current="page">Dashboard</button>
+      <button type="button" class="nav-item" data-screen="prices">Price manager</button>
+      <button type="button" class="nav-item" data-screen="trade">Purchases</button>
+      <button type="button" class="nav-item" data-screen="ship">Shipments</button>
+      <button type="button" class="nav-item" data-screen="inv">Invoices</button>
+      <button type="button" class="nav-item" data-screen="guide">Guide</button>
+    </div>
+    <div class="account">
+      <span class="account-label">Signed in as</span>
+      <span class="account-name">[COMPANY NAME]</span>
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <div class="topbar">
+      <div class="title-block">
+        <span class="eyebrow">Sample data</span>
+        <h1 id="screen-title">Dashboard</h1>
+      </div>
+      <div class="deadline" id="deadline">
+        <span class="deadline-label" id="deadline-label">Round closes at 16:00</span>
+        <span class="num deadline-time" id="deadline-time">&nbsp;</span>
+      </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dash" data-view="dash">
+      <div class="kpis">
+        <div class="kpi">
+          <span class="kpi-label">Won yesterday</span>
+          <span class="num kpi-value">23</span>
+          <span class="subtle">devices purchased</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Priced</span>
+          <span class="num kpi-value" id="kpi-priced">0 / 0</span>
+          <span class="subtle">model and state combinations</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Good chance</span>
+          <span class="num kpi-value" id="kpi-good">0</span>
+          <span class="subtle">above yesterday's best</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Credit</span>
+          <span class="num kpi-value">€ 114,200</span>
+          <span class="subtle">of € 117,400 limit</span>
+        </div>
+      </div>
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Your position vs yesterday</h2>
+          <span class="subtle">Yesterday's best price per state, next to your current price</span>
+        </div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>Model</th><th>State</th><th>Your price</th><th>Best yesterday</th><th>Difference</th><th>Status</th></tr></thead>
+            <tbody id="position-rows"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- Price manager -->
+    <section class="panel prices" data-view="prices" hidden>
+      <div class="toolbar">
+        <div class="field">
+          <label for="search">Search model</label>
+          <input id="search" class="search" type="search" placeholder="e.g. iPhone 15">
+        </div>
+        <div class="actions">
+          <button type="button" class="btn">Import CSV</button>
+          <button type="button" class="btn btn--soft" id="match-best">Set all to yesterday's best + € 1</button>
+          <button type="button" class="btn btn--primary" id="save-prices">Save</button>
+        </div>
+      </div>
+      <div class="notice" role="status" id="saved-notice" hidden>Saved. Your prices count for today's round.</div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>Product</th><th>State 1A</th><th>State 1B</th><th>State 1C</th><th>State 2</th></tr></thead>
+          <tbody id="price-rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Purchases -->
+    <section class="panel" data-view="trade" hidden>
+      <div class="filters" role="group" aria-label="Filter by status">
+        <button type="button" class="chip" data-filter="all" aria-pressed="true">All</button>
+        <button type="button" class="chip" data-filter="To ship" aria-pressed="false">To ship</button>
+        <button type="button" class="chip" data-filter="In transit" aria-pressed="false">In transit</button>
+        <button type="button" class="chip" data-filter="Discrepancy" aria-pressed="false">Discrepancy</button>
+      </div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>Transaction</th><th>Date</th><th>Model</th><th>State</th><th>Price</th><th>VAT</th><th>Status</th><th>Assessment</th></tr></thead>
+          <tbody id="trade-rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Shipments and Invoices: not designed yet -->
+    <section class="placeholder" data-view="ship inv" hidden>This screen comes in a next step.</section>
+
+    <!-- Guide -->
+    <div class="guide" data-view="guide" hidden>
+      <section class="panel steps-panel">
+        <h2>How a daily round works</h2>
+        <div class="steps">
+          <div class="step">
+            <span class="num step-n">1</span>
+            <span class="step-title">Set your prices</span>
+            <span class="step-text">Enter a price per model and state in the Price manager, or import a CSV.</span>
+          </div>
+          <div class="step">
+            <span class="num step-n">2</span>
+            <span class="step-title">Before 16:00 CET</span>
+            <span class="step-text">Prices saved before 16:00 count for that day. Bids are sealed: nobody sees anyone else’s price.</span>
+          </div>
+          <div class="step">
+            <span class="num step-n">3</span>
+            <span class="step-title">Highest price wins</span>
+            <span class="step-text">Each device goes to the buyer with the highest price for its model and state. The next day you see yesterday’s best price.</span>
+          </div>
+          <div class="step">
+            <span class="num step-n">4</span>
+            <span class="step-title">Assessment and shipping</span>
+            <span class="step-text">Won devices are checked at an assessment centre, then shipped to you and invoiced.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-intro">
+          <h2>Device states</h2>
+          <span class="intro-text">Every device is checked for activation lock and blacklist status. Data is wiped where possible.</span>
+        </div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>State</th><th>Name</th><th>What it means</th><th>Category</th></tr></thead>
+            <tbody>
+              <tr><td><span class="num state-badge">1A</span></td><td class="state-name">Fully tested</td><td class="state-detail">All functions work. Looks close to new, at most tiny marks.</td><td class="state-group">Fully tested</td></tr>
+              <tr><td><span class="num state-badge">1B</span></td><td class="state-name">Fully tested</td><td class="state-detail">All functions work. Light, visible signs of use.</td><td class="state-group">Fully tested</td></tr>
+              <tr><td><span class="num state-badge">1C</span></td><td class="state-name">Fully tested</td><td class="state-detail">All functions work. Clear wear, scratches or dents.</td><td class="state-group">Fully tested</td></tr>
+              <tr><td><span class="num state-badge">1</span></td><td class="state-name">Basic check only</td><td class="state-detail">Turns on, screen and housing intact, no missing parts. Other functions not tested.</td><td class="state-group">Partly tested</td></tr>
+              <tr><td><span class="num state-badge">2</span></td><td class="state-name">Worn battery</td><td class="state-detail">Fully tested, but battery health below 80% or more than 700 cycles.</td><td class="state-group">Fully tested</td></tr>
+              <tr><td><span class="num state-badge">3</span></td><td class="state-name">Major defect</td><td class="state-detail">At least one major fault, such as camera, back glass, flash, microphone or Bluetooth.</td><td class="state-group">Defective</td></tr>
+              <tr><td><span class="num state-badge">4</span></td><td class="state-name">Screen defect</td><td class="state-detail">Cracked screen, dead pixels, or Face ID / Touch ID not working.</td><td class="state-group">Defective</td></tr>
+              <tr><td><span class="num state-badge">5</span></td><td class="state-name">No power or locked</td><td class="state-detail">Does not turn on, or is locked to an account.</td><td class="state-group">Defective</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <span class="subtle">Anything not covered by these states is not tested and does not count as a discrepancy.</span>
+      </section>
+
+      <section class="panel contact-panel">
+        <h2>Questions?</h2>
+        <span class="contact-text">Contact your account manager at [EMAIL] or [PHONE].</span>
+      </section>
+    </div>
+
+  </main>
+</div>
+</body>
+</html>
